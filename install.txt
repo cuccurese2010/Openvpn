@@ -2,7 +2,7 @@ Oggi andremo ad installare Openvpn server su virtualbox distribuzione Linux Ubun
 Ci collegheremo in vpn dal nostro portatile alla nostra macchina virtuale in vpn.
 Questa configurazione non ha bisogno di un indirizzo ip pubblico.
 Per questa configurazione sfrutteremo il port forwarding  di virtualbox. 
-Quello che ci occorre è solo una macchina virtuale ubuntu ed un client vpn per accedere da windows. 
+Quello che ci occorre Ã¨ solo una macchina virtuale ubuntu ed un client vpn per accedere da windows. 
 In descrizione troverete tutti i link per questa installazione. 
 
 COMINCIAMO!!! 
@@ -12,6 +12,8 @@ tcp 127.0.0.1 2222 10.0.2.15 22
 
 Installiamo lo script che automatizza l'installazione di openvpn
 wget https://raw.githubusercontent.com/cuccurese2010/Openvpn/master/openvpn-install.sh
+chmod 775 openvpn-install.sh
+sudo ./openvpn-install.sh
 
 Firewall configurazione manuale
 ***************************************
