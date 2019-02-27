@@ -1,0 +1,65 @@
+Oggi andremo ad installare Openvpn server su virtualbox distribuzione Linux Ubuntu 18.04.
+Ci collegheremo in vpn dal nostro portatile alla nostra macchina virtuale in vpn.
+Questa configurazione non ha bisogno di un indirizzo ip pubblico.
+Per questa configurazione sfrutteremo il port forwarding  di virtualbox. 
+Quello che ci occorre è solo una macchina virtuale ubuntu ed un client vpn per accedere da windows. 
+In descrizione troverete tutti i link per questa installazione. 
+
+COMINCIAMO!!! 
+Configuriamo il port forwording su virtualbox 
+udp 127.0.0.1 1234 10.0.2.15 1194
+tcp 127.0.0.1 2222 10.0.2.15 22
+
+Installiamo lo script che automatizza l'installazione di openvpn
+wget https://raw.githubusercontent.com/cuccurese2010/Openvpn/master/openvpn-install.sh
+
+Firewall configurazione manuale
+***************************************
+sudo nano /etc/sysctl.conf
+net.ipv4.ip_forward=1
+sudo sysctl -p
+
+sudo apt install ufw 
+sudo nano /etc/ufw/before.rules
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+
+# START OPENVPN RULES
+# NAT table rules
+*nat
+:POSTROUTING ACCEPT [0:0] 
+# Allow traffic from OpenVPN client to enp0s3 (change to the interface you discovered!)
+-A POSTROUTING -s 10.8.0.0/24 -o enp0s3 -j MASQUERADE
+COMMIT
+# END OPENVPN RULES
+
+# Don't delete these required lines, otherwise there will be errors
+*filter
+. . .
+
+
+sudo nano /etc/default/ufw
+DEFAULT_FORWARD_POLICY="ACCEPT"
+
+
+We'll also add the SSH port in case you forgot to add it when following the prerequisite tutorial:
+
+sudo ufw allow 1194/udp
+sudo ufw allow OpenSSH
+Now, we can disable and re-enable UFW to load the changes from all of the files we've modified:
+
+sudo ufw disable
+sudo ufw enable
+sudo ufw status
+
+sudo systemctl restart openvpn@server
+
+
+
