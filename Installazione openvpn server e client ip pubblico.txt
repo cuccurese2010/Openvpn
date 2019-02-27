@@ -1,0 +1,69 @@
+Installare OPENVPN SERVER su Ubuntu 18.04
+Questa configurazione funziona solo se abbiamo un ip publico. 
+Questo script automatizza tutto, lanciare questi script openvpn-install.sh
+Il firewall invece  è da configurare manualmente. 
+
+Firewall configurazione manuale
+***************************************
+sudo nano /etc/sysctl.conf
+net.ipv4.ip_forward=1
+sudo sysctl -p
+
+
+sudo nano /etc/ufw/before.rules
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+
+# START OPENVPN RULES
+# NAT table rules
+*nat
+:POSTROUTING ACCEPT [0:0] 
+# Allow traffic from OpenVPN client to enp0s3 (change to the interface you discovered!)
+-A POSTROUTING -s 10.8.0.0/24 -o enp0s3 -j MASQUERADE
+COMMIT
+# END OPENVPN RULES
+
+# Don't delete these required lines, otherwise there will be errors
+*filter
+. . .
+
+
+sudo nano /etc/default/ufw
+DEFAULT_FORWARD_POLICY="ACCEPT"
+
+
+We'll also add the SSH port in case you forgot to add it when following the prerequisite tutorial:
+
+sudo ufw allow 1194/udp
+sudo ufw allow OpenSSH
+Now, we can disable and re-enable UFW to load the changes from all of the files we've modified:
+
+sudo ufw disable
+sudo ufw enable
+sudo ufw status
+
+sudo systemctl restart openvpn@server
+
+/etc/ufw/before.rules
+
+
+OPENVPN CLIENT
+copiare il file dal server sul nostro client: client.ovpn
+lanciare sempre con sudo il comando, senza sudo da errore: sudo openvpn client.ovpn
+
+
+CREARE ALTRI CERTIFICATI PER PIU CLIENT,CANCELLARE LA CONFIGURAZIONE, REVOCARE UN UTENTE, RIMUOVERE OPENVPN
+lanciare il comando: openvpn-install.sh
+
+
+
+
+
+
